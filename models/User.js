@@ -5,6 +5,12 @@ const SALT_WORK_FACTOR = 10;
 
 const Schema = mongoose.Schema;
 
+const PostSchema = new Schema({
+  dateTime: Date,
+  text: String,
+  image: String,
+});
+
 const UserSchema = new Schema({
   email: {
     type: String,
@@ -34,10 +40,12 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
+  posts: [PostSchema],
   gender: String,
   status: String,
+  city: String,
   dayOfBirth: String,
-  avatar: String
+  image: String
 });
 
 UserSchema.path("email").validate(value => {

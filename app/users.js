@@ -1,10 +1,12 @@
 const router = require("express").Router();
 const User = require("../models/User");
 const config = require("../config");
+const auth = require("../middleware/auth");
 
-router.post("/", config.upload.single("avatarImage"), async (req, res) => {
+router.post("/", async (req, res) => {
   const userData = {
-    displayName: req.body.displayName,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
     email: req.body.email,
     password: req.body.password,
   }
@@ -43,6 +45,23 @@ router.delete("/sessions", async (req, res) => {
 
   user.generateToken();
   user.save({validateBeforeSave: false});
+});
+
+router.put('/edit', [auth, config.upload.single("image")], async (req, res) => {
+  const userData = req.body;
+  if (req.file) {
+    userData.image = req.file.filename;
+  }
+  const token = req.get('Authorization');
+  const user = await User.findOne({token});
+
+  try {
+    await req.user.updateOne(userData);
+    const updatedUser = await User.findById(user._id);
+    res.send({user: updatedUser});
+  } catch (e) {
+    res.status(400).send(e);
+  }
 });
 
 module.exports = router;
