@@ -3,11 +3,9 @@ const app = express();
 const mongoose = require("mongoose");
 const users = require("./app/users");
 const posts = require("./app/posts");
-
 const cors = require('cors');
 const config = require("./config");
 const port = 8000;
-
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
