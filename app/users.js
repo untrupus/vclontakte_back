@@ -37,14 +37,33 @@ router.post('/sessions', async (req, res) => {
 router.delete("/sessions", async (req, res) => {
   const token = req.get("Authorization");
   const success = {message: "Success"};
-
   if (!token) return res.send(success);
-
   const user = await User.findOne({token});
   if (!user) return res.send(success);
-
   user.generateToken();
   user.save({validateBeforeSave: false});
+});
+
+router.get("/:id", async (req, res) => {
+    const result = await User.findById(req.params.id);
+    if (result) {
+      res.send(result);
+    } else {
+      res.sendStatus(404);
+    }
+});
+
+router.get("/", async (req, res) => {
+  try {
+    const result = await User.find();
+    if (result) {
+      res.send(result);
+    } else {
+      res.sendStatus(404);
+    }
+  } catch (e) {
+    return res.status(400).send(e);
+  }
 });
 
 router.put('/edit', [auth, config.upload.single("image")], async (req, res) => {
@@ -54,7 +73,6 @@ router.put('/edit', [auth, config.upload.single("image")], async (req, res) => {
   }
   const token = req.get('Authorization');
   const user = await User.findOne({token});
-
   try {
     await req.user.updateOne(userData);
     const updatedUser = await User.findById(user._id);
