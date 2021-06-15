@@ -3,6 +3,8 @@ const app = express();
 const mongoose = require("mongoose");
 const users = require("./app/users");
 const posts = require("./app/posts");
+const groups = require("./app/groups");
+const friends = require("./app/friends");
 const cors = require('cors');
 const config = require("./config");
 const port = 8000;
@@ -12,7 +14,8 @@ app.use(express.static('public'));
 
 const options = {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  useFindAndModify: false
 };
 
 const run = async () => {
@@ -20,6 +23,8 @@ const run = async () => {
 
   app.use("/users", users);
   app.use("/posts", posts);
+  app.use("/groups", groups);
+  app.use("/friends", friends);
 
   console.log("Connected");
   app.listen(port, () => {
