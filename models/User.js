@@ -12,15 +12,41 @@ const LikeSchema = new Schema({
   },
 });
 
+const ReplySchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
+  image: String,
+  firstName: String,
+  dateTime: Date,
+  text: {
+    type: String,
+    required: true
+  },
+  to: {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    firstName: String,
+  }
+});
+
 const CommentSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: "User",
   },
+  image: String,
+  firstName: String,
+  LastName: String,
+  dateTime: Date,
   text: {
     type: String,
     required: true
-  }
+  },
+  replies: [ReplySchema],
 });
 
 const PostSchema = new Schema({
@@ -28,7 +54,23 @@ const PostSchema = new Schema({
   text: String,
   image: String,
   likes: [LikeSchema],
-  comments: [CommentSchema]
+  comments: [CommentSchema],
+  repostFromUser: {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    name: String,
+    image: String
+  },
+  repostFromGroup: {
+    group: {
+      type: Schema.Types.ObjectId,
+      ref: "Group",
+    },
+    name: String,
+    image: String
+  }
 });
 
 const GroupSchema = new Schema({
