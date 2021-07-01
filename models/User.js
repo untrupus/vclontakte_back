@@ -93,6 +93,17 @@ const FriendSchema = new Schema({
   image: String
 });
 
+const ChatSchema = new Schema({
+  with: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  },
+  firstName: String,
+  lastName: String,
+  image: String,
+});
+
 const UserSchema = new Schema({
   email: {
     type: String,
@@ -125,6 +136,7 @@ const UserSchema = new Schema({
   groups: [GroupSchema],
   posts: [PostSchema],
   friends: [FriendSchema],
+  chats: [ChatSchema],
   gender: String,
   status: String,
   relationships: String,

@@ -82,4 +82,57 @@ router.put('/edit', [auth, config.upload.single("image")], async (req, res) => {
   }
 });
 
+router.patch("/chats", auth, async (req, res) => {
+  const token = req.get("Authorization");
+  const user = await User.findOne({token});
+  const chatWith = await User.findOne({_id: req.body.with});
+  const userChek = user.chats.find(chat => chat.with.equals(req.body.with));
+  const chatWithChek = chatWith.chats.find(chat => chat.with.equals(user._id));
+  const chatForAnotherUser = {
+    with: user._id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    image: user.image,
+  };
+  const chatWithMe = {
+    with: req.body.with,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    image: req.body.image,
+  }
+  if (!userChek && !chatWithChek) {
+    try {
+      await user.updateOne({$push: {chats: chatWithMe}});
+      await chatWith.updateOne({$push: {chats: chatForAnotherUser}});
+      const updatedUser = await User.findById({_id: user._id});
+      res.send({user: updatedUser});
+    } catch (e) {
+      res.status(400).send(e);
+    }
+  } else {
+    res.send({message: "This chat exists"});
+  }
+});
+
+router.patch("/chats/remove/:id", auth, async (req, res) => {
+  const token = req.get("Authorization");
+  const user = await User.findOne({token});
+  const chatWith = await User.findOne({_id: req.params.id});
+  const userChek = user.chats.find(chat => chat.with.equals(req.params.id));
+  const chatWithChek = chatWith.chats.find(chat => chat.with.equals(user._id));
+
+  if (userChek && chatWithChek) {
+    try {
+      await user.updateOne({$pull: {chats: {with: req.params.id}}});
+      await chatWith.updateOne({$pull: {chats: {with: user._id}}});
+      const updatedUser = await User.findById({_id: user._id});
+      res.send({user: updatedUser});
+    } catch (e) {
+      res.status(400).send(e);
+    }
+  } else {
+    res.send({message: "This chat does not exists"});
+  }
+});
+
 module.exports = router;
