@@ -1,13 +1,17 @@
 const express = require("express");
-const app = express();
 const mongoose = require("mongoose");
+const app = express();
+require("express-ws")(app);
+
 const users = require("./app/users");
 const posts = require("./app/posts");
 const groups = require("./app/groups");
 const friends = require("./app/friends");
+const socket = require("./app/socket");
 const cors = require('cors');
 const config = require("./config");
 const port = 8000;
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
@@ -25,6 +29,7 @@ const run = async () => {
   app.use("/posts", posts);
   app.use("/groups", groups);
   app.use("/friends", friends);
+  app.use("/socket", socket);
 
   console.log("Connected");
   app.listen(port, () => {
