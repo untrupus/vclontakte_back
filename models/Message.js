@@ -8,7 +8,6 @@ const MessageSchema = new Schema({
     ref: "User",
     required: true
   },
-
   to: {
     type: Schema.Types.ObjectId,
     ref: "User",
